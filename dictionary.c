@@ -87,7 +87,7 @@ bool load(const char* dictionary)
             {cursor=new_node;
             counter++;}
     
-        // in case of collisions 
+        // in case of collisions eat shit
         else
         {
             while (cursor->next != NULL)

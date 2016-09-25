@@ -4,7 +4,7 @@
  * Computer Science 50
  * Problem Set 5
  *
- * Implements a dictionary's functionality.
+ * Implements a dictionary's functionality. Future implementation to free malloc'ed memory
  * 
  */
 
@@ -52,9 +52,11 @@ bool load(const char* dictionary)
         
         new_node -> next = NULL;
         strcpy(new_node->word,"zzzz");
+        // save address pointing to this node in the array TODO hashtable[9] has the word aachen, should be zzzz after this
         hashtable[i]=new_node;
-        if (i == SIZE - 1) 
-            free(new_node);
+        /*if (i == SIZE - 1) 
+            // this also sets hashtable[size-1] equal to NULL, why?
+            free(new_node);*/
     }
 
     // file to keep track of hash values for the words in the dictionary
@@ -77,17 +79,19 @@ bool load(const char* dictionary)
         // hash the word to get the index of the "bucket" in the hash table, then insert the node into the linked list
         index = hash(new_node->word);
         
-        // write word into log
+        // write word and corresponding index into log
         fprintf(log,"Word %s with hash %d\n",new_node->word,index);
         
         // insert new node into list, nodes will be arranged according to alphabetical order;traverse the list until cursor points to last node
         node* cursor = hashtable[index];
-        // how do you handle an empty bucket. that is an index in the hash table where no words have been saved yet? you know that next is set to NULL
+        // found an empty bucket
         if (strcmp(cursor->word,"zzzz") == 0)
-            {cursor=new_node;
+            {hashtable[index] = new_node;
             counter++;}
     
-        // in case of collisions eat shit
+         /*in case of collisions append a node to the list; counter is my sloppy way of keeping track of how many words are in the 
+         dictionary, so that I can free new_node once I saved all of them
+         if I freed malloc during each iteration of the while loop they would all point to the same address*/ 
         else
         {
             while (cursor->next != NULL)
@@ -96,15 +100,14 @@ bool load(const char* dictionary)
                 }
             cursor->next = new_node;
             counter++;
-            if (counter == 20)
-                free(new_node);
-            
         }
+        /*if (counter == 20)
+                free(new_node);*/
     } 
     
 fclose(log);
 printf("loaded %d words into dictionary\n",counter);
-return true;
+return false;
 }
 
 /**

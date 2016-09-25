@@ -18,6 +18,7 @@
 
 // declare hashtable with all pointers initialized to NULL
 node* hashtable[SIZE] = {NULL};
+int counter = 0;
 
 /**
  * Returns true if word is in dictionary else false.
@@ -58,7 +59,7 @@ bool check(const char* word)
 bool load(const char* dictionary)
 {
     // when loading dictionary create a hash table
-    int index, counter=0;
+    int index;
     char word[LENGTH + 1];
     
     // open dictionary file
@@ -118,7 +119,6 @@ bool load(const char* dictionary)
     } 
     
 fclose(log);
-printf("loaded %d words into dictionary\n",counter);
 return true;
 }
 
@@ -127,8 +127,8 @@ return true;
  */
 unsigned int size(void)
 {
-    // TODO
-    return 0;
+    
+    return counter;
 }
 
 /**

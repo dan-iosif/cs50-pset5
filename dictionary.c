@@ -12,16 +12,44 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "dictionary.h"
+
+// declare hashtable with all pointers initialized to NULL
+node* hashtable[SIZE] = {NULL};
 
 /**
  * Returns true if word is in dictionary else false.
  */
 bool check(const char* word)
 {
-    // TODO
+    // convert to all lower cases
+    char temp[LENGTH + 1];
+    int len = strlen(word);
+    for(int i = 0; i < len; i++)
+        temp[i] = tolower(word[i]);
+    temp[len] = '\0';
+    
+    // find the index of the word
+    unsigned long index = hash(temp);
+    
+    // check if this index entry even exists
+    if (hashtable[index] == NULL) 
+        {
+        printf("Entry # %lu does not exist in hashtable.\n",index);
+        return false;
+        }
+    
+    node* cursor = hashtable[index];
+    while (cursor)
+    {
+    if (!strcmp (cursor->word,temp))
+        return true;
+    cursor=cursor->next;
+    }
     return false;
+    
 }
 
 /**
@@ -43,21 +71,6 @@ bool load(const char* dictionary)
     
 /* let's initialize the array by adding a new_node at each entry in the index. the elements to the array should all point 
 * to unique addresses!  */
-    
-    node* hashtable[SIZE];
-    for(int i=0; i<SIZE;i++)
-    {
-        node* new_node=malloc(sizeof(node));
-        if (new_node == NULL) return false;
-        
-        new_node -> next = NULL;
-        strcpy(new_node->word,"zzzz");
-        // save address pointing to this node in the array TODO hashtable[9] has the word aachen, should be zzzz after this
-        hashtable[i]=new_node;
-        /*if (i == SIZE - 1) 
-            // this also sets hashtable[size-1] equal to NULL, why?
-            free(new_node);*/
-    }
 
     // file to keep track of hash values for the words in the dictionary
     FILE* log= fopen("log.txt","w");
@@ -85,13 +98,13 @@ bool load(const char* dictionary)
         // insert new node into list, nodes will be arranged according to alphabetical order;traverse the list until cursor points to last node
         node* cursor = hashtable[index];
         // found an empty bucket
-        if (strcmp(cursor->word,"zzzz") == 0)
-            {hashtable[index] = new_node;
-            counter++;}
+        if (cursor == NULL)
+            {
+                hashtable[index] = new_node;
+                counter++;
+            }
     
-         /*in case of collisions append a node to the list; counter is my sloppy way of keeping track of how many words are in the 
-         dictionary, so that I can free new_node once I saved all of them
-         if I freed malloc during each iteration of the while loop they would all point to the same address*/ 
+        // in case of collisions append a node to the list
         else
         {
             while (cursor->next != NULL)
@@ -101,13 +114,12 @@ bool load(const char* dictionary)
             cursor->next = new_node;
             counter++;
         }
-        /*if (counter == 20)
-                free(new_node);*/
+        
     } 
     
 fclose(log);
 printf("loaded %d words into dictionary\n",counter);
-return false;
+return true;
 }
 
 /**

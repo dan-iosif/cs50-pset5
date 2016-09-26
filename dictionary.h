@@ -15,7 +15,7 @@
 // maximum length for a word
 // (e.g., pneumonoultramicroscopicsilicovolcanoconiosis)
 #define LENGTH 45
-#define SIZE 500
+#define SIZE 1000
 
 typedef struct node
 {

@@ -136,8 +136,20 @@ unsigned int size(void)
  */
 bool unload(void)
 {
-    // TODO
-    return false;
+    // TODO - double free error, in the case of small dictionary while does not advance past second word at index 3
+    // cursor to save pointer stored at hashtable index, then assign the next node in the list to hashtable index and free cursor; in the end hashtable[index] will be NULL
+    for(int i=0; i < SIZE; i++)
+    {
+        node* cursor;
+        while (hashtable[i] != NULL)
+        {
+            cursor = hashtable[i];            
+            hashtable[i] = cursor->next;
+            free (cursor);
+        }
+        
+    }
+    return true;
 }
 
 // djb2 algorithm used by dan bernstein
